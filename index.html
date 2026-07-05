@@ -732,14 +732,14 @@ function blobToBase64(blob) {
     reader.onerror = reject;
     reader.onload = () => resolve(reader.result);
     reader.readAsDataURL(blob);
-  }).then(e => e.target.result);
+  });
 }
 
-function sendResults() {
+async function sendResults() {
   const ts       = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-  const filename = `results_${participantId}_${ts}`;
+  const filename = `results_${participantId}_${ts}.txt`;
   const blob     = new Blob([resultsToTSV()], { type: 'text/plain' });
-  const base64   = blobToBase64(blob);
+  const base64   = await blobToBase64(blob);
   emailjs.send('service_82dp62l','template_j5xylj7',{
     title : participantId,
     file: filename,
