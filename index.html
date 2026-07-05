@@ -292,14 +292,14 @@
     <div id="eval-prompt" style="font-size:1.55em;font-weight:700;color:#222;margin-bottom:28px;min-height:1.8em;"></div>
 
     <div class="voice-grid">
-      <div class="voice-card" id="eval-card-v1">
-        <div class="voice-card-label">This voice is smiling</div>
-        <button class="btn-voice" id="eval-btn-v1" onclick="enableEvaluation(1)" disabled>Smiling</button>
-      </div>
       <div class="voice-card" id="eval-card-v2">
         <div class="voice-card-label">This voice is not smiling</div>
         <button class="btn-voice" id="eval-btn-v2" onclick="enableEvaluation(2)" disabled>Not Smiling</button>
       </div> 
+      <div class="voice-card" id="eval-card-v1">
+        <div class="voice-card-label">This voice is smiling</div>
+        <button class="btn-voice" id="eval-btn-v1" onclick="enableEvaluation(1)" disabled>Smiling</button>
+      </div>
     </div>
     <div>
       <div>
@@ -661,7 +661,8 @@ function loadEvaluation() {
 }
 
 function enableEvaluation(smile) {
-  document.getElementById('eval-btn-v' + smile).classList.add('chosen');
+  document.getElementById('eval-btn-v1').classList.remove('chosen');
+  document.getElementById('eval-btn-v2').classList.remove('chosen');
   document.getElementById('eval-btn-v' + smile).classList.add('chosen');
   rt = Date.now() - responseStartTime;
   evaluation = smile === 1 ? 'yes' : 'no';
@@ -723,15 +724,24 @@ function resultsToTSV() {
   return header + '\n' + results.map(r => r.join('\t')).join('\n');
 }
 
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  }).then(e => e.target.result);
+}
+
 function sendResults() {
   const ts       = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
   const filename = `results_${participantId}_${ts}`;
   const blob     = new Blob([resultsToTSV()], { type: 'text/plain' });
-  const url      = URL.createObjectURL(blob);
+  const base64   = blobToBase64(blob);
   emailjs.send('service_82dp62l','template_j5xylj7',{
     title : participantId,
     file: filename,
-    results: url 
+    results: base64 
   }).then(
     (response) => {
       console.log('SUCCESS!', response.status, response.text);
