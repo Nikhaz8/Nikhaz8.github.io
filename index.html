@@ -547,7 +547,7 @@ function enableButtons() {
 }
 
 function enableEvalButtons() {
-  document.getElementById('eval-status').textContent = '';
+  document.getElementById('eval-status').textContent = 'Go with your inital feeling.';
   document.getElementById('eval-prompt').textContent = 'Is this person smiling?';
   document.getElementById('eval-btn-v1').disabled = false;
   document.getElementById('eval-btn-v2').disabled = false;
@@ -689,12 +689,14 @@ function enableNext(familiar) {
 function recordEvaluation() {
   // Lock buttons immediately to prevent double-clicks
   conf = document.getElementById('confidence');
+  conf.disabled = true;
   document.getElementById('eval-btn-v1').disabled = true;
   document.getElementById('eval-btn-v2').disabled = true;
-  conf.disabled = true;
   document.getElementById('familiar').disabled = true;
   document.getElementById('unfamiliar').disabled = true;
   document.getElementById('eval-record').disabled = true;
+  document.getElementById('eval-btn-v1').classList.remove('chosen');
+  document.getElementById('eval-btn-v2').classList.remove('chosen');
   document.getElementById(familiarity === 'yes' ? 'familiar' : 'unfamiliar').classList.remove('chosen');
   
   const confidence = conf.value;
